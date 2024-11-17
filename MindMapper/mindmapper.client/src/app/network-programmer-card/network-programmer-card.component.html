@@ -21,17 +21,10 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <div
-      style="
-        width: 100%;
-        display: flex;
-        align-items: center;
-        padding-bottom: 1rem;
-      "
-    >
+    <div class="card-content-centered">
       <button
         #connectButton
-        style="flex-shrink: 1"
+        class="shrink-button"
         mat-icon-button
         (click)="connectCard()"
       >
@@ -52,9 +45,9 @@
         [model]="option"
         (closeEvent)="closeOption($event)"
         (connectEvent)="connectOption($event)"
-        style="width: 100%; display: block"
+        class="width-fill option-block"
       ></app-network-programmer-option>
     </div>
-    <button style="width: 100%" mat-button (click)="addOption()">Add</button>
+    <button class="width-fill" mat-button (click)="addOption()">Add</button>
   </mat-card-content>
 </mat-card>

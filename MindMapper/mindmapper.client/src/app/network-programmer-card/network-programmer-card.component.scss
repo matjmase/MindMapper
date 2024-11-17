@@ -38,3 +38,22 @@
 .red-button {
   color: red;
 }
+
+.card-content-centered {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding-bottom: 1rem;
+}
+
+.width-fill {
+  width: 100%;
+}
+
+.option-block {
+  display: block;
+}
+
+.shrink-button {
+  flex-shrink: 1;
+}
