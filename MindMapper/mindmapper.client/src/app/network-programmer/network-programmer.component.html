@@ -1,0 +1,29 @@
+<mat-list role="list">
+  <div mat-subheader class="flex-row">
+    <span>My Networks</span>
+    <span class="spacer"></span>
+    <button mat-raised-button routerLink="/programming/canvas">
+      Create New
+    </button>
+  </div>
+  <mat-divider></mat-divider>
+  <mat-list-item role="listitem" *ngFor="let canvas of canvases"
+    ><span class="flex-row vertically-spaced"
+      >{{ canvas.name }}<span class="spacer"></span>
+      <button
+        mat-raised-button
+        routerLink="/programming/canvas"
+        [queryParams]="{ canvasStateId: canvas.id }"
+      >
+        Edit
+      </button>
+      <button
+        class="red-button"
+        mat-raised-button
+        (click)="deleteCanvas(canvas)"
+      >
+        Delete
+      </button></span
+    ></mat-list-item
+  >
+</mat-list>

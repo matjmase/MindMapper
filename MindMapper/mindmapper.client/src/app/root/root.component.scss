@@ -1,0 +1,21 @@
+.nav-bar {
+  height: 64px;
+}
+
+.content-holder {
+  padding-top: 1rem;
+  display: flex;
+}
+
+.base-content {
+  height: calc(100vh - 1rem - 64px);
+}
+
+.side-spacer {
+  @extend .base-content;
+  width: 10vw;
+}
+.center-content {
+  @extend .base-content;
+  width: 80vw;
+}

@@ -1,0 +1,10 @@
+$icon-size: 30px;
+.big-icon {
+  height: $icon-size !important;
+  width: $icon-size !important;
+  font-size: $icon-size !important;
+}
+
+.spacer {
+  flex-grow: 1;
+}

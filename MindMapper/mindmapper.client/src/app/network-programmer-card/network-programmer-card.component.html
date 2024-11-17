@@ -1,0 +1,60 @@
+<mat-card class="node-card">
+  <mat-card-header
+    class="wide-text-area-header card-handle"
+    (mousedown)="mouseDown($event)"
+    (mouseup)="mouseUp()"
+    (mouseleave)="mouseLeave()"
+    (mousemove)="mouseMoveDrag($event)"
+  >
+    <mat-card-title class="wide-text-area-header">
+      <div class="card-close-header">
+        <span class="spacer"></span>
+        <button
+          class="red-button"
+          *ngIf="isClosable"
+          mat-icon-button
+          (click)="close()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div
+      style="
+        width: 100%;
+        display: flex;
+        align-items: center;
+        padding-bottom: 1rem;
+      "
+    >
+      <button
+        #connectButton
+        style="flex-shrink: 1"
+        mat-icon-button
+        (click)="connectCard()"
+      >
+        <mat-icon>settings_ethernet</mat-icon>
+      </button>
+      <mat-form-field subscriptSizing="dynamic" class="wide-text-area-header">
+        <mat-label>Title</mat-label>
+        <input matInput [(ngModel)]="model.title" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field class="wide-text-area-header">
+      <mat-label>Description</mat-label>
+      <textarea #myTextArea matInput [(ngModel)]="model.description"></textarea>
+    </mat-form-field>
+    <div *ngFor="let option of model.options">
+      <app-network-programmer-option
+        [model]="option"
+        (closeEvent)="closeOption($event)"
+        (connectEvent)="connectOption($event)"
+        style="width: 100%; display: block"
+      ></app-network-programmer-option>
+    </div>
+    <button style="width: 100%" mat-button (click)="addOption()">Add</button>
+  </mat-card-content>
+</mat-card>

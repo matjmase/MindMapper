@@ -1,0 +1,31 @@
+<div class="stretch-vertical">
+  <app-network-programmer-canvas-toolbar
+    [canvas]="canvas"
+    (addCardEvent)="addCard()"
+    (submitEvent)="onSubmit()"
+  ></app-network-programmer-canvas-toolbar>
+  <div class="canvas-holder">
+    <div
+      class="display-canvas"
+      oncontextmenu="return false"
+      #mainCanvas
+      (mousemove)="canvasMouseMove($event, mainCanvas)"
+      (mousedown)="canvasMouseDown($event)"
+      [style.height.px]="canvas.height"
+      [style.width.px]="canvas.width"
+      [style.left.px]="adjustedPositionX()"
+      [style.top.px]="adjustedPositionY()"
+      [style.scale]="canvas.scale"
+    >
+      <app-network-programmer-canvas-arrow
+        [proposedConnection]="model.proposedConnection"
+        [connections]="model.connections"
+      ></app-network-programmer-canvas-arrow>
+      <app-network-programmer-canvas-draggable
+        [canvas]="canvas"
+        [model]="model"
+        (onConnect)="connectItem($event)"
+      ></app-network-programmer-canvas-draggable>
+    </div>
+  </div>
+</div>

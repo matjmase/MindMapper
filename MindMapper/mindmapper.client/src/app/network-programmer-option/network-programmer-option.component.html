@@ -1,0 +1,24 @@
+<div
+  style="width: 100%; display: flex; align-items: center; padding-bottom: 1rem"
+>
+  <button
+    class="red-button"
+    style="flex-shrink: 1"
+    mat-icon-button
+    (click)="close()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+  <mat-form-field subscriptSizing="dynamic" style="flex-grow: 1">
+    <mat-label>Option</mat-label>
+    <input matInput [(ngModel)]="model.Text" />
+  </mat-form-field>
+  <button
+    #connectButton
+    style="flex-shrink: 1"
+    mat-icon-button
+    (click)="connect()"
+  >
+    <mat-icon>settings_ethernet</mat-icon>
+  </button>
+</div>

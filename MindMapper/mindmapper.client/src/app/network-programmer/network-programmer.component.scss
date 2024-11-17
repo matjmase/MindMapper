@@ -1,0 +1,16 @@
+.flex-row {
+  display: flex;
+  align-items: center;
+}
+
+.spacer {
+  flex-grow: 1;
+}
+
+.vertically-spaced {
+  padding: 1rem 0;
+}
+
+.red-button {
+  color: red;
+}

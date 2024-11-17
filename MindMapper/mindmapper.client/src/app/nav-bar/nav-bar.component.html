@@ -1,0 +1,30 @@
+<mat-toolbar>
+  <button mat-button routerLink="/">
+    <mat-icon class="big-icon">home</mat-icon>
+    <h1>Mind Mapper</h1>
+  </button>
+  <span class="spacer"></span>
+
+  <button mat-button routerLink="/programming" *appAuthenticated="true">
+    <mat-icon>hub</mat-icon>
+    Network Programmer
+  </button>
+
+  <button mat-button routerLink="/traversal" *appAuthenticated="true">
+    <mat-icon>account_tree</mat-icon>
+    Network Traversal
+  </button>
+
+  <button mat-button routerLink="/login" *appAuthenticated="false">
+    <mat-icon>login</mat-icon>
+    Login
+  </button>
+  <button mat-button routerLink="/register" *appAuthenticated="false">
+    <mat-icon>app_registration</mat-icon>
+    Register
+  </button>
+  <button mat-button (click)="logout()" *appAuthenticated="true">
+    <mat-icon>logout</mat-icon>
+    Logout
+  </button>
+</mat-toolbar>

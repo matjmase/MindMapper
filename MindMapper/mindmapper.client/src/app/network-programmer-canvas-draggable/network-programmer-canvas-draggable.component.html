@@ -1,0 +1,38 @@
+<div
+  #myCard
+  class="shrink-container absolute-location"
+  [style.top.px]="model.rootCard.top"
+  [style.left.px]="model.rootCard.left"
+>
+  <app-network-programmer-card
+    class="shrink-container"
+    [model]="model.rootCard"
+    [isClosable]="false"
+    (connectEvent)="connectItem($event)"
+    (closeOptionEvent)="closeOption($event)"
+    (mousedown)="mouseDown($event, myCard)"
+    (mouseup)="mouseUp()"
+    (mouseleave)="mouseLeave()"
+    (mousemove)="mouseMoveDrag($event, myCard, model.rootCard)"
+  ></app-network-programmer-card>
+</div>
+
+<div
+  *ngFor="let card of model.childCards"
+  #myCard
+  class="shrink-container absolute-location"
+  [style.top.px]="card.top"
+  [style.left.px]="card.left"
+>
+  <app-network-programmer-card
+    class="shrink-container"
+    [model]="card"
+    (closeEvent)="closeCard($event)"
+    (connectEvent)="connectItem($event)"
+    (closeOptionEvent)="closeOption($event)"
+    (mousedown)="mouseDown($event, myCard)"
+    (mouseup)="mouseUp()"
+    (mouseleave)="mouseLeave()"
+    (mousemove)="mouseMoveDrag($event, myCard, card)"
+  ></app-network-programmer-card>
+</div>

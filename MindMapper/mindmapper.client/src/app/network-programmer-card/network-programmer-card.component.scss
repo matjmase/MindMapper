@@ -1,0 +1,40 @@
+.node-card {
+  width: 500px;
+}
+
+.wide-text-area-header {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card-close-header {
+  display: flex;
+  height: 4rem;
+
+  .spacer {
+    flex-grow: 1;
+  }
+}
+
+::ng-deep .mdc-button__label {
+  z-index: 0 !important;
+}
+
+.card-handle {
+  background-color: lightskyblue;
+  border-top-right-radius: var(
+    --mdc-elevated-card-container-shape,
+    var(--mat-app-corner-medium)
+  );
+  border-top-left-radius: var(
+    --mdc-elevated-card-container-shape,
+    var(--mat-app-corner-medium)
+  );
+
+  margin-bottom: 2rem;
+}
+
+.red-button {
+  color: red;
+}

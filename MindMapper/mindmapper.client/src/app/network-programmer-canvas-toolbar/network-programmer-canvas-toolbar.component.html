@@ -1,0 +1,58 @@
+<mat-toolbar>
+  <button mat-button (click)="addCard()">Add Card</button>
+
+  <span class="spacer"></span>
+
+  <mat-form-field appearance="outline" class="tall-form-field">
+    <mat-label>Network Name</mat-label>
+    <input matInput [(ngModel)]="canvas!.name" />
+  </mat-form-field>
+
+  <span class="spacer"></span>
+
+  <button mat-button (click)="onSubmit()">Submit</button>
+</mat-toolbar>
+<mat-toolbar>
+  <span class="double-button">
+    <span>
+      <mat-icon matPrefix> search </mat-icon>
+      Zoom
+    </span>
+    <button mat-icon-button (click)="zoomOut()">
+      <mat-icon>remove</mat-icon>
+    </button>
+    <button mat-icon-button (click)="zoomIn()">
+      <mat-icon>add</mat-icon>
+    </button>
+  </span>
+
+  <span class="spacer"></span>
+
+  <span class="double-button">
+    <span>
+      <mat-icon matPrefix> width_wide </mat-icon>
+      Width
+    </span>
+    <button mat-icon-button (click)="shrinkX()">
+      <mat-icon>remove</mat-icon>
+    </button>
+    <button mat-icon-button (click)="enlargeX()">
+      <mat-icon>add</mat-icon>
+    </button>
+  </span>
+
+  <span class="spacer"></span>
+
+  <span class="double-button">
+    <span>
+      <mat-icon matPrefix> line_weight </mat-icon>
+      Height
+    </span>
+    <button mat-icon-button (click)="shrinkY()">
+      <mat-icon>remove</mat-icon>
+    </button>
+    <button mat-icon-button (click)="enlargeY()">
+      <mat-icon>add</mat-icon>
+    </button>
+  </span>
+</mat-toolbar>

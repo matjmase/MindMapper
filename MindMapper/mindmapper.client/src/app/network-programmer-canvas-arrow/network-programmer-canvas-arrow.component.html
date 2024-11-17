@@ -1,0 +1,21 @@
+<svg *ngIf="proposedConnection" class="arrow-layer">
+  <path
+    [attr.d]="getLineString(proposedConnection)"
+    stroke="black"
+    fill="transparent"
+  ></path>
+  <path
+    [attr.d]="getArrowLines(proposedConnection)"
+    stroke="black"
+    fill="black"
+  ></path>
+</svg>
+
+<svg *ngFor="let connector of connections" class="arrow-layer">
+  <path
+    [attr.d]="getLineString(connector)"
+    stroke="black"
+    fill="transparent"
+  ></path>
+  <path [attr.d]="getArrowLines(connector)" stroke="black" fill="black"></path>
+</svg>
