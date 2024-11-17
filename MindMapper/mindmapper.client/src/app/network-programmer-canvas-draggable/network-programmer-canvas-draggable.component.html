@@ -10,10 +10,10 @@
     [isClosable]="false"
     (connectEvent)="connectItem($event)"
     (closeOptionEvent)="closeOption($event)"
-    (mousedown)="mouseDown($event, myCard)"
-    (mouseup)="mouseUp()"
-    (mouseleave)="mouseLeave()"
-    (mousemove)="mouseMoveDrag($event, myCard, model.rootCard)"
+    (mouseDownEvent)="mouseDown($event, myCard)"
+    (mouseUpEvent)="mouseUp()"
+    (mouseLeaveEvent)="mouseLeave()"
+    (mouseMoveDragEvent)="mouseMoveDrag($event, myCard, model.rootCard)"
   ></app-network-programmer-card>
 </div>
 
@@ -30,9 +30,9 @@
     (closeEvent)="closeCard($event)"
     (connectEvent)="connectItem($event)"
     (closeOptionEvent)="closeOption($event)"
-    (mousedown)="mouseDown($event, myCard)"
-    (mouseup)="mouseUp()"
-    (mouseleave)="mouseLeave()"
-    (mousemove)="mouseMoveDrag($event, myCard, card)"
+    (mouseDownEvent)="mouseDown($event, myCard)"
+    (mouseUpEvent)="mouseUp()"
+    (mouseLeaveEvent)="mouseLeave()"
+    (mouseMoveDragEvent)="mouseMoveDrag($event, myCard, card)"
   ></app-network-programmer-card>
 </div>
