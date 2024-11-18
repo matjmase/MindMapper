@@ -9,7 +9,16 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { firstValueFrom, forkJoin, mergeAll, mergeMap, timeout } from 'rxjs';
+import {
+  firstValueFrom,
+  forkJoin,
+  mergeAll,
+  mergeMap,
+  Observable,
+  of,
+  timeout,
+  toArray,
+} from 'rxjs';
 import {
   CanvasStateDto,
   CanvasStateService,
@@ -45,11 +54,6 @@ export class NetworkProgrammerCanvasComponent implements OnInit {
   public model: NetworkProgrammerCanvasModel =
     new NetworkProgrammerCanvasModel();
 
-  private _cardMap: Map<string, NetworkProgrammerCardModel> | undefined;
-  private _optionMap:
-    | Map<OptionDto, NetworkProgrammerCardOptionModel>
-    | undefined;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -62,73 +66,115 @@ export class NetworkProgrammerCanvasComponent implements OnInit {
     const id = this.route.snapshot.queryParamMap.get('canvasStateId');
 
     if (id) {
-      let cards: NetworkProgrammerCardModel[];
-
-      const canvasAndCards = await firstValueFrom(
-        forkJoin(
-          this.canvasService.apiCanvasStateIdGet(id),
-          this.cardService.apiCardSearchGet(undefined, undefined, undefined, id)
+      forkJoin([
+        this.canvasService.apiCanvasStateIdGet(id),
+        this.cardService.apiCardSearchGet(undefined, undefined, undefined, id),
+      ])
+        .pipe(
+          mergeMap((canvasAndCards) => {
+            return forkJoin(
+              canvasAndCards[1].map((card) =>
+                this.optionService
+                  .apiOptionSearchGet(undefined, undefined, card.id!)
+                  .pipe(
+                    mergeMap<OptionDto[], Observable<[CardDto, OptionDto[]]>>(
+                      (options) => {
+                        return of([card, options]);
+                      }
+                    )
+                  )
+              )
+            ).pipe(
+              mergeMap<
+                [CardDto, OptionDto[]][],
+                Observable<[CanvasStateDto, [CardDto, OptionDto[]][]]>
+              >((cardAndOptionArr) => {
+                return of([canvasAndCards[0], cardAndOptionArr]);
+              })
+            );
+          })
         )
-      );
+        .subscribe((totalCanvas) => {
+          const canvas = totalCanvas[0];
+          const cardAndOptionsArr = totalCanvas[1];
 
-      this.canvas = canvasAndCards[0];
-      cards = canvasAndCards[1].map((card) =>
-        NetworkProgrammerCardModel.fromDto(card)
-      );
+          // update canvas
+          this.canvas = canvas;
 
-      // connecting map card
-      this._cardMap = new Map<string, NetworkProgrammerCardModel>();
-
-      cards.forEach((card) => {
-        this._cardMap?.set(card.id, card);
-      });
-
-      // connecting map option
-      this._optionMap = new Map<OptionDto, NetworkProgrammerCardOptionModel>();
-
-      for (let card of cards) {
-        const options = await firstValueFrom(
-          this.optionService.apiOptionSearchGet(undefined, undefined, card.id)
-        );
-        options.forEach((option) => {
-          this._optionMap?.set(
-            option,
-            NetworkProgrammerCardOptionModel.fromDto(option)
+          // dto to internal
+          const cards = cardAndOptionsArr.map((cardAndOptions) =>
+            NetworkProgrammerCardModel.fromDto(cardAndOptions[0])
           );
-        });
-        card.options = options.map((option) => this._optionMap?.get(option)!);
-      }
 
-      const seedCardIndex = cards.findIndex(
-        (card) => card.id === this.canvas.seedCardId
-      );
+          // connecting map card id to internal
+          const cardIdMap = new Map<string, NetworkProgrammerCardModel>();
 
-      const seedCard = cards[seedCardIndex];
+          cards.forEach((card) => {
+            cardIdMap.set(card.id, card);
+          });
 
-      cards.splice(seedCardIndex, 1);
+          // connecting map option dto to internal
+          const optionDtoMap = new Map<
+            OptionDto,
+            NetworkProgrammerCardOptionModel
+          >();
 
-      this.model.childCards = cards;
+          cardAndOptionsArr.forEach((cardAndOptions) => {
+            const options = cardAndOptions[1];
 
-      seedCard.connectButton = this.model.rootCard.connectButton;
-      this.model.rootCard = seedCard;
-
-      setTimeout(() => {
-        timeout;
-        this._optionMap?.forEach((internal, dto) => {
-          if (dto.pointToCardId) {
-            const match = this._cardMap?.get(dto.pointToCardId);
-
-            if (!match) {
-              throw Error(
-                'option points to card out of the context of this canvas'
+            // conversion to dto
+            options.forEach((option) => {
+              optionDtoMap.set(
+                option,
+                NetworkProgrammerCardOptionModel.fromDto(option)
               );
-            }
+            });
 
-            this.connectItem(internal);
-            this.connectItem(match);
-          }
+            // connect option children to card
+            const cardId = cardAndOptions[0].id!;
+            cardIdMap.get(cardId)!.options = options.map(
+              (option) => optionDtoMap.get(option)!
+            );
+          });
+
+          // find seed card
+          const seedCardIndex = cards.findIndex(
+            (card) => card.id === this.canvas.seedCardId
+          );
+
+          const seedCard = cards[seedCardIndex];
+
+          // remove from collection
+          cards.splice(seedCardIndex, 1);
+
+          // all but seed
+          this.model.childCards = cards;
+
+          // corner case - if it has loaded, this will already be loaded
+          seedCard.connectButton = this.model.rootCard.connectButton;
+
+          // assign the seed card
+          this.model.rootCard = seedCard;
+
+          // because we depend on "ngAfterViewInit" we have to wait for the views and ngFors to load.
+          setTimeout(() => {
+            // use the maps to connect them up
+            optionDtoMap.forEach((internal, dto) => {
+              if (dto.pointToCardId) {
+                const match = cardIdMap.get(dto.pointToCardId);
+
+                if (!match) {
+                  throw Error(
+                    'option points to card out of the context of this canvas'
+                  );
+                }
+
+                this.connectItem(internal);
+                this.connectItem(match);
+              }
+            });
+          }, 100);
         });
-      }, 100);
     }
   }
 
