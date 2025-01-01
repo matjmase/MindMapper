@@ -10,6 +10,8 @@ using MindMapper.Server.Services.Dto.Implementation;
 using MindMapper.Server.Services.Dto.Interface;
 using MindMapper.Server.Services.Repository.Implementation;
 using MindMapper.Server.Services.Repository.Interface;
+using MindMapper.Server.Services.Composite;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,7 @@ builder.Services.AddTransient<IOptionRepository, OptionRepository>();
 builder.Services.AddTransient<ICanvasStateDtoConversion, CanvasStateDtoConversion>();
 builder.Services.AddTransient<ICardDtoConversion, CardDtoConversion>();
 builder.Services.AddTransient<IOptionDtoConversion, OptionDtoConversion>();
+builder.Services.AddTransient<ICanvasStateComposite, CanvasStateComposite>();
 
 // identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

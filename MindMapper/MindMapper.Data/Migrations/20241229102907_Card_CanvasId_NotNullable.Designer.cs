@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MindMapper.Data;
 
@@ -11,9 +12,11 @@ using MindMapper.Data;
 namespace MindMapper.Data.Migrations
 {
     [DbContext(typeof(MindMapperContext))]
-    partial class MindMapperContextModelSnapshot : ModelSnapshot
+    [Migration("20241229102907_Card_CanvasId_NotNullable")]
+    partial class Card_CanvasId_NotNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

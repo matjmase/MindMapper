@@ -14,9 +14,21 @@ namespace MindMapper.Server.DtoModels.OptionDto
         {
             return new Option
             {
-                Id = !string.IsNullOrWhiteSpace(Id) ? new Guid(Id) : new Guid(),
+                Id = !string.IsNullOrEmpty(Id) ? new Guid(Id) : new Guid(),
                 Text = Text,
                 CardId = new Guid(CardId),
+                PointToCardId = !string.IsNullOrWhiteSpace(PointToCardId) ? new Guid(PointToCardId) : null,
+                CreatedByUserId = userId,
+                UpdatedByUserId = userId,
+            };
+        }
+        public Option ToDbModel(string userId, Guid cardId)
+        {
+            return new Option
+            {
+                Id = !string.IsNullOrEmpty(Id) ? new Guid(Id) : new Guid(),
+                Text = Text,
+                CardId = cardId,
                 PointToCardId = !string.IsNullOrWhiteSpace(PointToCardId) ? new Guid(PointToCardId) : null,
                 CreatedByUserId = userId,
                 UpdatedByUserId = userId,

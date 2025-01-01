@@ -13,20 +13,34 @@ namespace MindMapper.Server.DtoModels.CardDto
         public int Top { get; set; }
         public int Left { get; set; }
 
-        public string? CanvasStateId { get; set; }
+        public string CanvasStateId { get; set; }
 
         public Card ToDbModel(string userId)
         {
             return new Card
             {
-                Id = !string.IsNullOrWhiteSpace(Id) ? new Guid(Id) : new Guid(),
+                Id = !string.IsNullOrEmpty(Id) ? new Guid(Id) : new Guid(),
                 Title = Title,
                 Description = Description,
                 Top = Top,
                 Left = Left,
-                CanvasStateId = !string.IsNullOrWhiteSpace(CanvasStateId) ? new Guid(CanvasStateId) : null,
+                CanvasStateId = new Guid(CanvasStateId),
                 CreatedByUserId = userId,
-                UpdatedByUserId = userId    
+                UpdatedByUserId = userId
+            };
+        }
+        public Card ToDbModel(string userId, Guid canvasStateId)
+        {
+            return new Card
+            {
+                Id = !string.IsNullOrEmpty(Id) ? new Guid(Id) : new Guid(),
+                Title = Title,
+                Description = Description,
+                Top = Top,
+                Left = Left,
+                CanvasStateId = canvasStateId,
+                CreatedByUserId = userId,
+                UpdatedByUserId = userId
             };
         }
 
@@ -39,7 +53,7 @@ namespace MindMapper.Server.DtoModels.CardDto
                 Description = entity.Description,
                 Top = entity.Top,
                 Left = entity.Left,
-                CanvasStateId = entity.CanvasStateId?.ToString()
+                CanvasStateId = entity.CanvasStateId.ToString()
             };
         }
     }

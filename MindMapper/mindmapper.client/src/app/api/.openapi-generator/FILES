@@ -6,6 +6,7 @@ api/api.ts
 api/authentication.service.ts
 api/canvasState.service.ts
 api/card.service.ts
+api/compositeCanvasState.service.ts
 api/option.service.ts
 configuration.ts
 encoder.ts
@@ -13,8 +14,12 @@ git_push.sh
 index.ts
 model/canvasStateDto.ts
 model/cardDto.ts
+model/compositeCanvasStateDtoRequest.ts
+model/compositeCanvasStateDtoResponse.ts
 model/loginModelDto.ts
 model/models.ts
+model/naiveCardDto.ts
+model/naiveOptionDto.ts
 model/optionDto.ts
 model/primaryUserDto.ts
 model/refreshTokenModeDto.ts

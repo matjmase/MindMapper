@@ -26,6 +26,10 @@ import {
   OptionService,
   CardDto,
   OptionDto,
+  CompositeCanvasStateService,
+  NaiveCardDto,
+  NaiveOptionDto,
+  CompositeCanvasStateDtoResponse,
 } from '../api';
 import { IConnectButtonContainer } from '../models/connect-button-container';
 import { DragPositionCoord } from '../models/drag-position-coord';
@@ -45,6 +49,7 @@ export class NetworkProgrammerCanvasComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   public canvas: CanvasStateDto = {
+    id: '',
     height: 1000,
     width: 1000,
     name: 'Unnamed',
@@ -56,125 +61,96 @@ export class NetworkProgrammerCanvasComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
-    private canvasService: CanvasStateService,
-    private cardService: CardService,
-    private optionService: OptionService
+    private compositeService: CompositeCanvasStateService
   ) {}
 
   async ngOnInit() {
     const id = this.route.snapshot.queryParamMap.get('canvasStateId');
 
     if (id) {
-      forkJoin([
-        this.canvasService.apiCanvasStateIdGet(id),
-        this.cardService.apiCardSearchGet(undefined, undefined, undefined, id),
-      ])
-        .pipe(
-          mergeMap((canvasAndCards) => {
-            return forkJoin(
-              canvasAndCards[1].map((card) =>
-                this.optionService
-                  .apiOptionSearchGet(undefined, undefined, card.id!)
-                  .pipe(
-                    mergeMap<OptionDto[], Observable<[CardDto, OptionDto[]]>>(
-                      (options) => {
-                        return of([card, options]);
-                      }
-                    )
-                  )
-              )
-            ).pipe(
-              mergeMap<
-                [CardDto, OptionDto[]][],
-                Observable<[CanvasStateDto, [CardDto, OptionDto[]][]]>
-              >((cardAndOptionArr) => {
-                return of([canvasAndCards[0], cardAndOptionArr]);
-              })
-            );
-          })
-        )
-        .subscribe((totalCanvas) => {
-          const canvas = totalCanvas[0];
-          const cardAndOptionsArr = totalCanvas[1];
+      this.compositeService
+        .apiCompositeCanvasStateIdGet(id)
+        .subscribe((composite) => this.initializeToComposite(composite));
+    }
+  }
 
-          // update canvas
-          this.canvas = canvas;
+  private initializeToComposite(composite: CompositeCanvasStateDtoResponse) {
+    {
+      if (composite == null) {
+        return;
+      }
 
-          // dto to internal
-          const cards = cardAndOptionsArr.map((cardAndOptions) =>
-            NetworkProgrammerCardModel.fromDto(cardAndOptions[0])
-          );
+      this.model = new NetworkProgrammerCanvasModel();
 
-          // connecting map card id to internal
-          const cardIdMap = new Map<string, NetworkProgrammerCardModel>();
+      // update canvas
+      this.canvas = composite.canvas!;
 
-          cards.forEach((card) => {
-            cardIdMap.set(card.id, card);
-          });
+      // dto to internal
+      const cards = composite.cards!.map((card) =>
+        NetworkProgrammerCardModel.fromDto(card)
+      );
 
-          // connecting map option dto to internal
-          const optionDtoMap = new Map<
-            OptionDto,
-            NetworkProgrammerCardOptionModel
-          >();
+      // connecting map card id to internal
+      const cardIdMap = new Map<string, NetworkProgrammerCardModel>();
 
-          cardAndOptionsArr.forEach((cardAndOptions) => {
-            const options = cardAndOptions[1];
+      cards.forEach((card) => {
+        cardIdMap.set(card.id, card);
+      });
 
-            // conversion to dto
-            options.forEach((option) => {
-              optionDtoMap.set(
-                option,
-                NetworkProgrammerCardOptionModel.fromDto(option)
+      // connecting map option dto to internal
+      const optionDtoMap = new Map<
+        OptionDto,
+        NetworkProgrammerCardOptionModel
+      >();
+
+      composite.options!.forEach((option) => {
+        optionDtoMap.set(
+          option,
+          NetworkProgrammerCardOptionModel.fromDto(option)
+        );
+
+        // connect option children to card
+        const cardId = option.cardId!;
+        cardIdMap.get(cardId)!.options.push(optionDtoMap.get(option)!);
+      });
+
+      // find seed card
+      const seedCardIndex = cards.findIndex(
+        (card) => card.id === this.canvas.seedCardId
+      );
+
+      const seedCard = cards[seedCardIndex];
+
+      // remove from collection
+      cards.splice(seedCardIndex, 1);
+
+      // all but seed
+      this.model.childCards = cards;
+
+      // corner case - if it has loaded, this will already be loaded
+      seedCard.connectButton = this.model.rootCard.connectButton;
+
+      // assign the seed card
+      this.model.rootCard = seedCard;
+
+      // because we depend on "ngAfterViewInit" we have to wait for the views and ngFors to load.
+      setTimeout(() => {
+        // use the maps to connect them up
+        optionDtoMap.forEach((internal, dto) => {
+          if (dto.pointToCardId) {
+            const match = cardIdMap.get(dto.pointToCardId);
+
+            if (!match) {
+              throw Error(
+                'option points to card out of the context of this canvas'
               );
-            });
+            }
 
-            // connect option children to card
-            const cardId = cardAndOptions[0].id!;
-            cardIdMap.get(cardId)!.options = options.map(
-              (option) => optionDtoMap.get(option)!
-            );
-          });
-
-          // find seed card
-          const seedCardIndex = cards.findIndex(
-            (card) => card.id === this.canvas.seedCardId
-          );
-
-          const seedCard = cards[seedCardIndex];
-
-          // remove from collection
-          cards.splice(seedCardIndex, 1);
-
-          // all but seed
-          this.model.childCards = cards;
-
-          // corner case - if it has loaded, this will already be loaded
-          seedCard.connectButton = this.model.rootCard.connectButton;
-
-          // assign the seed card
-          this.model.rootCard = seedCard;
-
-          // because we depend on "ngAfterViewInit" we have to wait for the views and ngFors to load.
-          setTimeout(() => {
-            // use the maps to connect them up
-            optionDtoMap.forEach((internal, dto) => {
-              if (dto.pointToCardId) {
-                const match = cardIdMap.get(dto.pointToCardId);
-
-                if (!match) {
-                  throw Error(
-                    'option points to card out of the context of this canvas'
-                  );
-                }
-
-                this.connectItem(internal);
-                this.connectItem(match);
-              }
-            });
-          }, 100);
+            this.connectItem(internal);
+            this.connectItem(match);
+          }
         });
+      }, 100);
     }
   }
 
@@ -326,110 +302,71 @@ export class NetworkProgrammerCanvasComponent implements OnInit {
   }
 
   public async onSubmit(): Promise<void> {
-    // Canvas inital post
-    let dbCanvas: CanvasStateDto;
+    // canvas
+    const canvas = this.canvas;
 
-    if (this.canvas.id) {
-      dbCanvas = await firstValueFrom(
-        this.canvasService.apiCanvasStatePut(this.canvas)
-      );
-    } else {
-      dbCanvas = await firstValueFrom(
-        this.canvasService.apiCanvasStatePost(this.canvas)
-      );
-    }
+    // set IDs
+    let counter = 0;
+    const cardIndexMap = new Map<NetworkProgrammerCardModel, number>();
+    const cards: NaiveCardDto[] = [];
 
-    const internalToDtoMap = new Map<NetworkProgrammerCardModel, CardDto>();
-
-    // first card initial Post
-    let firstCardDb: CardDto;
-
-    if (this.model.rootCard.id) {
-      firstCardDb = await firstValueFrom(
-        this.cardService.apiCardPut(this.model.rootCard.toDto(dbCanvas.id!))
-      );
-    } else {
-      firstCardDb = await firstValueFrom(
-        this.cardService.apiCardPost(this.model.rootCard.toDto(dbCanvas.id!))
-      );
-    }
-
-    internalToDtoMap.set(this.model.rootCard, firstCardDb);
-
-    dbCanvas.seedCardId = firstCardDb.id;
-
-    // canvas update
-    dbCanvas = await firstValueFrom(
-      this.canvasService.apiCanvasStatePut(dbCanvas)
-    );
-
-    // child cards initial post
-    for (const child of this.model.childCards) {
-      const childDto = child.toDto(dbCanvas.id!);
-
-      let childDb: CardDto;
-      if (childDto.id) {
-        childDb = await firstValueFrom(this.cardService.apiCardPut(childDto));
-      } else {
-        childDb = await firstValueFrom(this.cardService.apiCardPost(childDto));
-      }
-
-      internalToDtoMap.set(child, childDb);
+    // populate and index
+    cards.push(this.model.rootCard.toNaiveDto(canvas.id!, counter));
+    cardIndexMap.set(this.model.rootCard, counter);
+    counter++;
+    for (let child of this.model.childCards) {
+      cards.push(child.toNaiveDto(canvas.id!, counter));
+      cardIndexMap.set(child, counter);
+      counter++;
     }
 
     // options
+    const options: NaiveOptionDto[] = [];
+
+    // options
     for (const option of this.model.rootCard.options) {
-      const optionDto = option.toDto(
-        internalToDtoMap.get(this.model.rootCard)?.id!
+      const pointsTo = this.model.optionConnections.get(option)?.[0];
+
+      const optionDto = option.toNaiveDto(
+        this.model.rootCard.id,
+        cardIndexMap.get(this.model.rootCard)!,
+        pointsTo ? cardIndexMap.get(pointsTo) : undefined
       );
 
-      const pointsTo = this.model.optionConnections.get(option)?.[0];
-      const mapedCard =
-        pointsTo != undefined ? internalToDtoMap.get(pointsTo) : undefined;
-
-      optionDto.pointToCardId = mapedCard?.id;
-
-      if (optionDto.id) {
-        await firstValueFrom(this.optionService.apiOptionPut(optionDto));
-      } else {
-        await firstValueFrom(this.optionService.apiOptionPost(optionDto));
-      }
+      options.push(optionDto);
     }
 
     for (const child of this.model.childCards) {
       for (const option of child.options) {
-        const optionDto = option.toDto(internalToDtoMap.get(child)?.id!);
-
         const pointsTo = this.model.optionConnections.get(option)?.[0];
-        const mapedCard =
-          pointsTo != undefined ? internalToDtoMap.get(pointsTo) : undefined;
 
-        optionDto.pointToCardId = mapedCard?.id;
-
-        if (optionDto.id) {
-          await firstValueFrom(this.optionService.apiOptionPut(optionDto));
-        } else {
-          await firstValueFrom(this.optionService.apiOptionPost(optionDto));
-        }
+        const optionDto = option.toNaiveDto(
+          option.id,
+          cardIndexMap.get(child)!,
+          pointsTo ? cardIndexMap.get(pointsTo) : undefined
+        );
+        options.push(optionDto);
       }
     }
 
-    // update cards
-    const first = internalToDtoMap.get(this.model.rootCard)!;
-
-    first.canvasStateId = dbCanvas.id;
-
-    await firstValueFrom(this.cardService.apiCardPut(first));
-
-    for (const child of this.model.childCards) {
-      const dtoChild = internalToDtoMap.get(child)!;
-
-      dtoChild.canvasStateId = dbCanvas.id;
-
-      await firstValueFrom(this.cardService.apiCardPut(dtoChild));
+    // submit to API
+    if (canvas.id) {
+      this.compositeService
+        .apiCompositeCanvasStatePut({
+          canvas: canvas,
+          cards: cards,
+          options: options,
+        })
+        .subscribe((composite) => this.initializeToComposite(composite));
+    } else {
+      this.compositeService
+        .apiCompositeCanvasStatePut({
+          canvas: canvas,
+          cards: cards,
+          options: options,
+        })
+        .subscribe((composite) => this.initializeToComposite(composite));
     }
-
-    this.router.navigate(['/programming']);
   }
 
   public canvasMouseMove(event: MouseEvent, div: HTMLDivElement) {

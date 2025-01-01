@@ -3,7 +3,9 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
@@ -16,7 +18,9 @@ import { NetworkProgrammerCardModel } from '../models/network-programmer-card.mo
   templateUrl: './network-programmer-card.component.html',
   styleUrl: './network-programmer-card.component.scss',
 })
-export class NetworkProgrammerCardComponent implements AfterViewInit {
+export class NetworkProgrammerCardComponent
+  implements OnChanges, AfterViewInit
+{
   @ViewChild('connectButton')
   public buttonTarget!: MatIconButton;
 
@@ -35,6 +39,9 @@ export class NetworkProgrammerCardComponent implements AfterViewInit {
   @Output() public mouseDownEvent = new EventEmitter<MouseEvent>();
 
   ngAfterViewInit(): void {
+    this.model.connectButton = this.buttonTarget;
+  }
+  ngOnChanges(changes: SimpleChanges): void {
     this.model.connectButton = this.buttonTarget;
   }
 

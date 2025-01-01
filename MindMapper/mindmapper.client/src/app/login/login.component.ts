@@ -33,7 +33,5 @@ export class LoginComponent {
           this.router.navigate(['/']);
         },
       });
-
-    console.log('worked');
   }
 }

@@ -1,5 +1,5 @@
 import { MatIconButton } from '@angular/material/button';
-import { OptionDto } from '../api';
+import { NaiveOptionDto, OptionDto } from '../api';
 import { NetworkProgrammerCanvasModel } from './network-programmer-canvas.model';
 import { IConnectButtonContainer } from './connect-button-container';
 
@@ -17,6 +17,20 @@ export class NetworkProgrammerCardOptionModel
       id: this.id,
       cardId: cardId,
       text: this.Text,
+    };
+  }
+
+  public toNaiveDto(
+    cardId: string,
+    cardIndexId: number,
+    pointsToIndexId: number | undefined
+  ): NaiveOptionDto {
+    return {
+      id: this.id,
+      cardId: cardId,
+      text: this.Text,
+      naiveCardId: cardIndexId,
+      naivePointToCardId: pointsToIndexId ?? null,
     };
   }
 

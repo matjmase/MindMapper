@@ -16,7 +16,7 @@ namespace MindMapper.Data.Models
         public int Top { get; set; }
         public int Left { get; set; }
 
-        public Guid? CanvasStateId { get; set; }
+        public Guid CanvasStateId { get; set; }
         [ForeignKey(nameof(CanvasStateId))]
         public virtual CanvasState? CanvasState { get; set; }
 

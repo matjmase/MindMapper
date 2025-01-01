@@ -1,5 +1,5 @@
 import { MatIconButton } from '@angular/material/button';
-import { CardDto } from '../api';
+import { CardDto, NaiveCardDto } from '../api';
 import { IConnectButtonContainer } from './connect-button-container';
 import { NetworkProgrammerCanvasModel } from './network-programmer-canvas.model';
 import { NetworkProgrammerCardOptionModel } from './network-programmer-card-option.model';
@@ -25,6 +25,18 @@ export class NetworkProgrammerCardModel implements IConnectButtonContainer {
       description: this.description,
       top: this.top,
       left: this.left,
+    };
+  }
+
+  public toNaiveDto(canvasId: string, indexId: number): NaiveCardDto {
+    return {
+      id: this.id,
+      canvasStateId: canvasId,
+      title: this.title,
+      description: this.description,
+      top: this.top,
+      left: this.left,
+      naiveId: indexId,
     };
   }
 
