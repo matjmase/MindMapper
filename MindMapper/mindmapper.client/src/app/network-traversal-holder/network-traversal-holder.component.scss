@@ -1,0 +1,39 @@
+.canvas-title {
+  text-align: center;
+}
+
+.card-holder {
+  overflow: hidden;
+  padding-bottom: 1rem;
+  position: relative;
+  height: 100%;
+}
+
+.slide-card {
+  top: 0;
+  position: absolute;
+  width: 100%;
+  height: fit-content;
+}
+
+@mixin slide-card-location($percentage) {
+  left: $percentage;
+  transition: left 1s;
+}
+
+.slide-card-left {
+  @include slide-card-location(-150%);
+}
+
+.slide-card-center {
+  @include slide-card-location(0%);
+}
+
+.slide-card-right {
+  @include slide-card-location(150%);
+}
+
+.slide-card-invisible {
+  opacity: 0;
+  pointer-events: none;
+}

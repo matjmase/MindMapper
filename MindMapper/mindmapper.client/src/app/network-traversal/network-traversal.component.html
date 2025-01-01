@@ -1,1 +1,14 @@
-<p>network-traversal works!</p>
+<mat-list role="list">
+  <mat-list-item role="listitem" *ngFor="let canvas of canvases"
+    ><span class="flex-row vertically-spaced"
+      >{{ canvas.name }}<span class="spacer"></span>
+      <button
+        mat-raised-button
+        routerLink="/traversal/network"
+        [queryParams]="{ canvasStateId: canvas.id }"
+      >
+        Traverse
+      </button>
+    </span></mat-list-item
+  >
+</mat-list>

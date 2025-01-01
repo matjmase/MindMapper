@@ -34,6 +34,8 @@ import { NetworkProgrammerCanvasToolbarComponent } from './network-programmer-ca
 import { NetworkProgrammerCanvasArrowComponent } from './network-programmer-canvas-arrow/network-programmer-canvas-arrow.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { NetworkProgrammerCanvasDraggableComponent } from './network-programmer-canvas-draggable/network-programmer-canvas-draggable.component';
+import { NetworkTraversalCardComponent } from './network-traversal-card/network-traversal-card.component';
+import { NetworkTraversalHolderComponent } from './network-traversal-holder/network-traversal-holder.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +54,8 @@ import { NetworkProgrammerCanvasDraggableComponent } from './network-programmer-
     NetworkProgrammerCanvasToolbarComponent,
     NetworkProgrammerCanvasArrowComponent,
     NetworkProgrammerCanvasDraggableComponent,
+    NetworkTraversalCardComponent,
+    NetworkTraversalHolderComponent,
   ],
   bootstrap: [RootComponent],
   imports: [

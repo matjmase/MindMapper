@@ -1,0 +1,27 @@
+<mat-card>
+  <mat-card-header class="card-header">
+    <mat-card-title> {{ card.title }} </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-divider></mat-divider>
+    <div class="card-description">{{ card.description }}</div>
+    <mat-divider></mat-divider>
+    <mat-card-actions class="vertical-buttons">
+      <ng-container *ngFor="let option of options">
+        <button
+          mat-button
+          class="wide-button"
+          (click)="optionSelectedEmit(option)"
+        >
+          {{ option.text }}
+          <span *ngIf="!option.pointToCardId"> (End Traversal) </span>
+        </button>
+      </ng-container>
+      <ng-container *ngIf="options.length === 0">
+        <button mat-button class="wide-button" (click)="endTraversalEmit()">
+          End Traversal
+        </button>
+      </ng-container>
+    </mat-card-actions>
+  </mat-card-content>
+</mat-card>

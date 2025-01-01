@@ -6,6 +6,7 @@ import { NetworkProgrammerComponent } from './network-programmer/network-program
 import { NetworkTraversalComponent } from './network-traversal/network-traversal.component';
 import { RegisterComponent } from './register/register.component';
 import { HomeComponent } from './home/home.component';
+import { NetworkTraversalHolderComponent } from './network-traversal-holder/network-traversal-holder.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', component: HomeComponent },
@@ -20,6 +21,7 @@ const routes: Routes = [
         component: NetworkProgrammerCanvasComponent,
       },
       { path: 'traversal', component: NetworkTraversalComponent },
+      { path: 'traversal/network', component: NetworkTraversalHolderComponent },
     ],
   },
 ];
