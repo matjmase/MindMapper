@@ -1,4 +1,4 @@
-<form class="center-content" [formGroup]="registerForm" (ngSubmit)="login()">
+<form class="center-content" [formGroup]="registerForm" (ngSubmit)="register()">
   <mat-card class="med-card">
     <mat-card-header>
       <mat-card-title> Register </mat-card-title>
@@ -36,6 +36,11 @@
           [formControl]="registerForm.controls.passwordConfirm"
         />
       </mat-form-field>
+      <mat-error
+        *ngIf="registerForm?.errors?.['passwordsNotMatching'] ?? false"
+      >
+        Passwords don't match
+      </mat-error>
     </mat-card-content>
     <mat-card-footer>
       <mat-card-actions>
